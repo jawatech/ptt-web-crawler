@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import json
 
 import requests
 from bs4 import BeautifulSoup
@@ -42,7 +43,8 @@ class PttWebSpider(scrapy.Spider):
         self.max_requests = None
 
         self.url = '{}/bbs/{}/index.html'.format(self._domain, self.board)
-        self.saved_repo = os.path.abspath(os.sep.join(['data', self.board]))
+        current_dir = os.path.dirname(__file__)
+        self.saved_repo = os.path.abspath(os.path.join(current_dir, '../../data', self.board))
         self.last_page_index = None
         self.search_steps = None
         self.search_index = None
@@ -288,7 +290,9 @@ class PttWebSpider(scrapy.Spider):
         data['message_count'] = message_count
         data['messages'] = messages
 
-        yield data
+        output_path = os.path.join(self.saved_repo, article_id + '.json')
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(json.dumps(dict(data)))
 
     def parse_page(self, response):
         soup = BeautifulSoup(response.body, 'lxml')

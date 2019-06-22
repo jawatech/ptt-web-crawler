@@ -38,8 +38,8 @@
     }
 
 ### 執行方式
-    python crawler.py -b 看板名稱 -i 起始索引 結束索引 (設為 -1 則自動計算最後一頁) 
-    python crawler.py -b 看板名稱 -a 文章ID 
+    python crawler.py -b 看板名稱 -i 起始索引 結束索引 (設為 -1 則自動計算最後一頁)
+    python crawler.py -b 看板名稱 -a 文章ID
 
 ### 範例
     * 直接執行腳本:`python crawler.py -b PublicServan -i 100 200`
@@ -57,15 +57,15 @@
 
     cd ptt_web_crawler
     scrapy crawl ptt-web -a board=Gossiping -a article_id=M.1413618360.A.4F0
-    scrapy crawl ptt-web -a board=Gossiping -a page=100,200
-    scrapy crawl ptt-web -a board=Gossiping -a page=100,-1
+    scrapy crawl ptt-web -a board=Gossiping -a pages=100,200
+    scrapy crawl ptt-web -a board=Gossiping -a pages=100,-1
 
 ### 測試
     python test.py
 
 ***
 
-ptt-web-crawler is a crawler for the web version of PTT, the largest online community in Taiwan. 
+ptt-web-crawler is a crawler for the web version of PTT, the largest online community in Taiwan.
 
     usage: python crawler.py [-h] -b BOARD_NAME (-i START_INDEX END_INDEX | -a ARTICLE_ID) [-v]
     optional arguments:
