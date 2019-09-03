@@ -215,7 +215,7 @@ class PttWebSpider(scrapy.Spider):
 
         try:
             ip = main_content.find(text=re.compile(u'※ 發信站:'))
-            ip = re.search(r'[0-9]*.[0-9]*.[0-9]*.[0-9]*', ip).group()
+            ip = re.search(r'[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*', ip).group()
         except:
             ip = "None"
 
