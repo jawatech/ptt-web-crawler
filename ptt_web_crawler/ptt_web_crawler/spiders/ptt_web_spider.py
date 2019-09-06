@@ -215,7 +215,7 @@ class PttWebSpider(scrapy.Spider):
 
         try:
             ip = main_content.find(text=re.compile(u'※ 發信站:'))
-            ip = re.search(r'[0-9]*.[0-9]*.[0-9]*.[0-9]*', ip).group()
+            ip = re.search(r'[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*', ip).group()
         except:
             ip = "None"
 
@@ -393,28 +393,31 @@ class PttWebSpider(scrapy.Spider):
             if cdiv['class'][0] == 'r-list-sep':
                 break
             clear_divs.append(cdiv)
+        is_search_forward = True if n != -1 else False
         n = len(clear_divs) - 1 if n == -1 else n
 
-        for i, div in enumerate(clear_divs):
+        while n >= 0 and n < len(clear_divs):
+            div = clear_divs[n]
             if div['class'][0] == 'r-list-sep':
                 break
-            if i != n:
-                continue
 
-            article_href = div.find('a')['href']
-            article_url = '{}{}'.format(self._domain, article_href)
-            resp_year = requests.get(article_url, cookies=self._cookies)
-            soup_year = BeautifulSoup(resp_year.text, 'lxml')
-            main_content = soup_year.find(id='main-content')
-            metas = main_content.select('div.article-metaline')
+            if div.find('div', attrs={'class': 'title'}).a is not None:  # avoid from article being removed
+                article_href = div.find('a')['href']
+                article_url = '{}{}'.format(self._domain, article_href)
+                resp_year = requests.get(article_url, cookies=self._cookies)
+                soup_year = BeautifulSoup(resp_year.text, 'lxml')
+                main_content = soup_year.find(id='main-content')
+                metas = main_content.select('div.article-metaline')
 
-            if metas:
-                date = metas[2].select('span.article-meta-value')[0]
-                date = date.string if date else ''
-                date = self.ptt_article_ptime(date)
-                return date
-            else:
-                last_date = soup.select('div.date')[n]
-                last_date = last_date.text.strip(' ')
-                last_date = datetime.strptime(last_date, '%m/%d')
-                return last_date
+                if metas:
+                    date = metas[2].select('span.article-meta-value')[0]
+                    date = date.string if date else ''
+                    date = self.ptt_article_ptime(date)
+                    return date
+                else:
+                    last_date = soup.select('div.date')[n]
+                    last_date = last_date.text.strip(' ')
+                    last_date = datetime.strptime(last_date, '%m/%d')
+                    return last_date
+
+            n = n+1 if is_search_forward else n-1
